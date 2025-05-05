@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "differ"
+version = "0.1"
+dependencies = [
+    "lief",
+    "rich",
+    "capstone"
+]
+authors = [
+  {name = "N1kroks", email = "nikroksm@mail.ru"},
+]
+description = "A binary diff tool"
+license = "MIT"
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+]
+
+[project.urls]
+Homepage = "https://github.com/N1kroks/differ"
+
+[project.scripts]
+differ = "differ.main:start"
