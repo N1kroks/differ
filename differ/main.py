@@ -8,6 +8,7 @@ from typing import List, Dict, Tuple
 HEX_DIFF_SIZE = 16
 PE_MODES = {
     lief.PE.Header.MACHINE_TYPES.ARM64: (CS_ARCH_ARM64, CS_MODE_ARM),
+    lief.PE.Header.MACHINE_TYPES.ARMNT: (CS_ARCH_ARM, CS_MODE_ARM),
     lief.PE.Header.MACHINE_TYPES.ARM: (CS_ARCH_ARM, CS_MODE_ARM),
 }
 ELF_MODES = {
@@ -91,7 +92,7 @@ def get_executable_sections(binary: lief.Binary) -> lief.Section:
         sections.extend(
             s
             for s in binary.sections
-            if s.has_characteristic(lief.ELF.Section.FLAGS.EXECINSTR)
+            if s.has(lief.ELF.Section.FLAGS.EXECINSTR)
         )
         if not sections:
             sections.extend(
@@ -121,8 +122,14 @@ def dissasmble_diff(
         (None, None),
     )
 
+    if None in mode1 or None in mode2:
+        arch1 = bin1.header.machine if bin1.format == lief.Binary.FORMATS.PE else bin1.header.machine_type
+        arch2 = bin2.header.machine if bin2.format == lief.Binary.FORMATS.PE else bin2.header.machine_type
+        console.print(f"[bold red]Cannot compare disassembly unknown arch: {arch1}, {arch2}[/bold red]")
+        return
+
     if mode1 != mode2:
-        console.print("[bold red]Cannot compare disassembly with different arch[/red]")
+        console.print("[bold red]Cannot compare disassembly with different arch[/bold red]")
         return
 
     md = Cs(mode1[0], mode1[1])
